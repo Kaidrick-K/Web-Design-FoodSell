@@ -1,13 +1,666 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Food Sell</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FEASTORY – Home</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary:       #1a4d6e;
+      --primary-light: #2a6d9e;
+      --accent:        #f4a835;
+      --bg:            #f5f6fa;
+      --card-bg:       #ffffff;
+      --text:          #1c2340;
+      --muted:         #8a91a8;
+      --radius:        14px;
+      --nav-h:         65px;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #e8eaf0;
+      min-height: 100dvh;
+      display: flex;
+      justify-content: center;
+    }
+
+    /* ── Phone shell ── */
+    .phone {
+      position: relative;
+      width: 100%;
+      max-width: 420px;
+      min-height: 100dvh;
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* ── Scrollable content area (above bottom nav) ── */
+    .scroll-area {
+      flex: 1;
+      overflow-y: auto;
+      padding-bottom: calc(var(--nav-h) + 12px);
+      scrollbar-width: none;
+    }
+    .scroll-area::-webkit-scrollbar { display: none; }
+
+    /* ══════════════════════════════
+       TOP HEADER
+    ══════════════════════════════ */
+    .header {
+      background: var(--primary);
+      padding: 46px 20px 22px;
+      position: relative;
+    }
+
+    .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .greeting-line {
+      font-size: 13px;
+      color: rgba(255,255,255,0.70);
+      font-weight: 400;
+    }
+
+    .greeting-name {
+      font-size: 20px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .header-icons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .icon-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border: none;
+      transition: background .2s;
+    }
+    .icon-btn:hover { background: rgba(255,255,255,0.25); }
+    .icon-btn svg { width: 18px; height: 18px; fill: #fff; }
+
+    /* Search bar */
+    .search-wrap {
+      position: relative;
+    }
+    .search-input {
+      width: 100%;
+      padding: 12px 16px 12px 44px;
+      border-radius: 30px;
+      border: none;
+      font-family: 'Poppins', sans-serif;
+      font-size: 13px;
+      color: var(--text);
+      background: #fff;
+      outline: none;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+    }
+    .search-input::placeholder { color: var(--muted); }
+    .search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 18px; height: 18px;
+      fill: var(--muted);
+      pointer-events: none;
+    }
+
+    /* ══════════════════════════════
+       QUICK ACTIONS (Delivery / Pick-Up)
+    ══════════════════════════════ */
+    .quick-actions {
+      display: flex;
+      gap: 12px;
+      padding: 20px 20px 4px;
+    }
+
+    .qa-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      border-radius: 30px;
+      border: 2px solid transparent;
+      font-family: 'Poppins', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .qa-btn.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+    .qa-btn.inactive {
+      background: #fff;
+      color: var(--muted);
+      border-color: #e0e3ec;
+    }
+    .qa-btn svg { width: 16px; height: 16px; }
+
+    /* ══════════════════════════════
+       SECTION TITLES
+    ══════════════════════════════ */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 20px 12px;
+    }
+    .section-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .section-link {
+      font-size: 12px;
+      color: var(--primary-light);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    /* ══════════════════════════════
+       RESTORAN POPULER (horizontal scroll)
+    ══════════════════════════════ */
+    .popular-scroll {
+      display: flex;
+      gap: 14px;
+      padding: 0 20px 4px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .popular-scroll::-webkit-scrollbar { display: none; }
+
+    .restaurant-card {
+      flex: 0 0 160px;
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 3px 14px rgba(0,0,0,0.08);
+      text-decoration: none;
+      color: inherit;
+      transition: transform .2s;
+    }
+    .restaurant-card:hover { transform: translateY(-3px); }
+
+    .rc-img {
+      width: 100%;
+      height: 110px;
+      background: #d8dce6;
+      position: relative;
+      overflow: hidden;
+    }
+    /* REPLACE: insert <img src="..." alt="..."/> inside .rc-img */
+    .rc-img img { width:100%; height:100%; object-fit:cover; display:block; }
+
+    .rc-badge {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: var(--accent);
+      color: #fff;
+      font-size: 9px;
+      font-weight: 700;
+      padding: 3px 7px;
+      border-radius: 20px;
+    }
+
+    .rc-body {
+      padding: 10px 12px;
+    }
+    .rc-name {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 5px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .rc-meta {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .star-icon { color: #f4a835; font-size: 11px; }
+
+    /* ══════════════════════════════
+       REKOMENDASI (2-col grid)
+    ══════════════════════════════ */
+    .reko-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      padding: 0 20px;
+    }
+
+    .reko-card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 3px 14px rgba(0,0,0,0.08);
+      text-decoration: none;
+      color: inherit;
+      transition: transform .2s;
+    }
+    .reko-card:hover { transform: translateY(-3px); }
+
+    .reko-img {
+      width: 100%;
+      height: 105px;
+      background: #d0d5e2;
+      overflow: hidden;
+    }
+    /* REPLACE: insert <img src="..." alt="..."/> inside .reko-img */
+    .reko-img img { width:100%; height:100%; object-fit:cover; display:block; }
+
+    .reko-body {
+      padding: 10px 12px;
+    }
+    .reko-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .reko-price {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    /* ══════════════════════════════
+       PROMO BANNER
+    ══════════════════════════════ */
+    .promo-scroll {
+      display: flex;
+      gap: 14px;
+      padding: 0 20px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .promo-scroll::-webkit-scrollbar { display: none; }
+
+    .promo-banner {
+      flex: 0 0 280px;
+      height: 110px;
+      border-radius: var(--radius);
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      align-items: center;
+      padding: 0 18px;
+    }
+    /* REPLACE: insert <img> for banner background inside .promo-banner */
+    .promo-banner img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: .35;
+    }
+
+    .promo-copy {
+      position: relative;
+      z-index: 1;
+    }
+    .promo-label {
+      font-size: 11px;
+      color: rgba(255,255,255,.75);
+      font-weight: 500;
+    }
+    .promo-title {
+      font-size: 22px;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: 1px;
+    }
+    .promo-sub {
+      font-size: 11px;
+      color: rgba(255,255,255,.75);
+    }
+
+    /* ══════════════════════════════
+       BOTTOM NAVIGATION
+    ══════════════════════════════ */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 420px;
+      height: var(--nav-h);
+      background: #fff;
+      border-top: 1px solid #e8eaf0;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      z-index: 100;
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.07);
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      text-decoration: none;
+      padding: 6px 16px;
+      border-radius: 12px;
+      transition: background .2s;
+    }
+    .nav-item:hover { background: #f0f4f8; }
+    .nav-item svg { width: 22px; height: 22px; }
+    .nav-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--muted);
+    }
+    .nav-item.active .nav-label { color: var(--primary); }
+    .nav-item.active svg { fill: var(--primary) !important; }
+    .nav-item svg { fill: var(--muted); transition: fill .2s; }
+
+    /* ── Spacing at section bottoms ── */
+    .section-spacer { height: 6px; }
+
+    @media (min-width: 600px) {
+      body { background: #0a0f14; }
+      .phone {
+        min-height: unset;
+        border-radius: 40px;
+        box-shadow: 0 30px 80px rgba(0,0,0,0.7);
+        height: 820px;
+        margin: 30px 0;
+      }
+      .bottom-nav {
+        border-radius: 0 0 40px 40px;
+      }
+    }
+  </style>
 </head>
 <body>
-    <p>Halo, Selamat Datang di Food Sell!</p>
+
+<div class="phone">
+  <div class="scroll-area">
+
+    <!-- ══ HEADER ══ -->
+    <header class="header">
+      <div class="header-top">
+        <div>
+          <div class="greeting-line">Halo,</div>
+          <div class="greeting-name">Hello, Jennifer! 👋</div>
+        </div>
+        <div class="header-icons">
+          <!-- Favorite / heart icon -->
+          <button class="icon-btn" aria-label="Favorit">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>
+          </button>
+          <!-- Notification / bell icon -->
+          <button class="icon-btn" aria-label="Notifikasi">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 22c1.1 0 2-.9 2-2h-4a2 2 0 0 0 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Search bar -->
+      <div class="search-wrap">
+        <svg class="search-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+        </svg>
+        <input class="search-input" type="text" placeholder="Cari restoran atau makanan..."/>
+      </div>
+    </header>
+
+    <!-- ══ QUICK ACTIONS ══ -->
+    <div class="quick-actions">
+      <button class="qa-btn active" id="btn-delivery">
+        <!-- Delivery icon -->
+        <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+          <path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zm-.5 1.5l1.96 2.5H17V9.5h2.5zM6 18c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm13.5-1c0 .55-.45 1-1 1s-1-.45-1-1 .45-1 1-1 1 .45 1 1z"/>
+        </svg>
+        Delivery
+      </button>
+      <button class="qa-btn inactive" id="btn-pickup">
+        <!-- Pick-up icon -->
+        <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+          <path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/>
+        </svg>
+        Pick-Up
+      </button>
+    </div>
+
+    <!-- ══ RESTORAN POPULER ══ -->
+    <div class="section-header">
+      <span class="section-title">Restoran Populer</span>
+      <a href="#" class="section-link">Lihat Semua</a>
+    </div>
+
+    <div class="popular-scroll">
+
+      <!-- Card 1 – links to restaurant profile -->
+      <a href="restaurant-profile.html" class="restaurant-card">
+        <div class="rc-img">
+          <!-- REPLACE: <img src="your-image.jpg" alt="Rumah Makan Dahsyat"/> -->
+          <div style="width:100%;height:100%;background:linear-gradient(135deg,#c97b3b,#8b4513);"></div>
+          <span class="rc-badge">Populer</span>
+        </div>
+        <div class="rc-body">
+          <div class="rc-name">Rumah Makan Dahsyat</div>
+          <div class="rc-meta">
+            <span class="star-icon">★</span>
+            <span>4.8</span>
+            <span>·</span>
+            <span>0.5 km</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- Card 2 -->
+      <a href="restaurant-profile.html" class="restaurant-card">
+        <div class="rc-img">
+          <!-- REPLACE: <img src="your-image.jpg" alt="Soto Babat KQ Petrus"/> -->
+          <div style="width:100%;height:100%;background:linear-gradient(135deg,#d4a060,#a0522d);"></div>
+          <span class="rc-badge">Baru</span>
+        </div>
+        <div class="rc-body">
+          <div class="rc-name">Soto Babat KQ Petrus</div>
+          <div class="rc-meta">
+            <span class="star-icon">★</span>
+            <span>4.6</span>
+            <span>·</span>
+            <span>1.2 km</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- Card 3 -->
+      <a href="restaurant-profile.html" class="restaurant-card">
+        <div class="rc-img">
+          <!-- REPLACE: <img src="your-image.jpg" alt="Warung Padang Barokah"/> -->
+          <div style="width:100%;height:100%;background:linear-gradient(135deg,#8fbc5c,#4a7c28);"></div>
+        </div>
+        <div class="rc-body">
+          <div class="rc-name">Warung Padang Barokah</div>
+          <div class="rc-meta">
+            <span class="star-icon">★</span>
+            <span>4.5</span>
+            <span>·</span>
+            <span>2.0 km</span>
+          </div>
+        </div>
+      </a>
+
+    </div>
+
+    <div class="section-spacer"></div>
+
+    <!-- ══ REKOMENDASI ══ -->
+    <div class="section-header">
+      <span class="section-title">Rekomendasi</span>
+      <a href="#" class="section-link">Lihat Semua</a>
+    </div>
+
+    <div class="reko-grid">
+
+      <!-- Item 1 – links to product detail -->
+      <a href="product-detail.html" class="reko-card">
+        <div class="reko-img">
+          <!-- REPLACE: <img src="your-image.jpg" alt="Nasi Goreng Kampung"/> -->
+          <div style="width:100%;height:100%;background:linear-gradient(135deg,#e8a040,#c07030);"></div>
+        </div>
+        <div class="reko-body">
+          <div class="reko-name">Nasi Goreng Kampung</div>
+          <div class="reko-price">Rp 25.000</div>
+        </div>
+      </a>
+
+      <!-- Item 2 -->
+      <a href="product-detail.html" class="reko-card">
+        <div class="reko-img">
+          <!-- REPLACE: <img src="your-image.jpg" alt="Ayam Bakar Madu"/> -->
+          <div style="width:100%;height:100%;background:linear-gradient(135deg,#c8a060,#9b6020);"></div>
+        </div>
+        <div class="reko-body">
+          <div class="reko-name">Ayam Bakar Madu</div>
+          <div class="reko-price">Rp 32.000</div>
+        </div>
+      </a>
+
+      <!-- Item 3 -->
+      <a href="product-detail.html" class="reko-card">
+        <div class="reko-img">
+          <!-- REPLACE: <img src="your-image.jpg" alt="Kwetiau Sapi Goreng"/> -->
+          <div style="width:100%;height:100%;background:linear-gradient(135deg,#a8c090,#5a7a40);"></div>
+        </div>
+        <div class="reko-body">
+          <div class="reko-name">Kwetiau Sapi Goreng</div>
+          <div class="reko-price">Rp 28.000</div>
+        </div>
+      </a>
+
+      <!-- Item 4 -->
+      <a href="product-detail.html" class="reko-card">
+        <div class="reko-img">
+          <!-- REPLACE: <img src="your-image.jpg" alt="Rawon Iga Spesial"/> -->
+          <div style="width:100%;height:100%;background:linear-gradient(135deg,#6a4a3a,#3a2018);"></div>
+        </div>
+        <div class="reko-body">
+          <div class="reko-name">Rawon Iga Spesial</div>
+          <div class="reko-price">Rp 40.000</div>
+        </div>
+      </a>
+
+    </div>
+
+    <div class="section-spacer"></div>
+
+    <!-- ══ PROMO ══ -->
+    <div class="section-header">
+      <span class="section-title">Promo</span>
+      <a href="#" class="section-link">Lihat Semua</a>
+    </div>
+
+    <div class="promo-scroll">
+
+      <!-- Banner 1 -->
+      <div class="promo-banner">
+        <!-- REPLACE: <img src="promo-banner-1.jpg" alt="Grand Opening"/> -->
+        <div class="promo-copy">
+          <div class="promo-label">Special Event</div>
+          <div class="promo-title">GRAND</div>
+          <div class="promo-sub">Diskon hingga 50% hari ini</div>
+        </div>
+      </div>
+
+      <!-- Banner 2 -->
+      <div class="promo-banner" style="background:linear-gradient(135deg,#a33a1a,#d4601e)">
+        <!-- REPLACE: <img src="promo-banner-2.jpg" alt="Weekend Sale"/> -->
+        <div class="promo-copy">
+          <div class="promo-label">Weekend Sale</div>
+          <div class="promo-title">SALE</div>
+          <div class="promo-sub">Gratis ongkir setiap Sabtu</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="section-spacer" style="height:16px;"></div>
+
+  </div><!-- /scroll-area -->
+
+  <!-- ══ BOTTOM NAVIGATION ══ -->
+  <nav class="bottom-nav">
+    <a href="index.html" class="nav-item active">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+      </svg>
+      <span class="nav-label">Beranda</span>
+    </a>
+    <a href="#" class="nav-item">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14H7v-2h5v2zm5-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+      </svg>
+      <span class="nav-label">Pesanan</span>
+    </a>
+    <a href="#" class="nav-item">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+      </svg>
+      <span class="nav-label">Favorit</span>
+    </a>
+    <a href="#" class="nav-item">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+      </svg>
+      <span class="nav-label">Profil</span>
+    </a>
+  </nav>
+
+</div><!-- /phone -->
+
+<script>
+  // Toggle Delivery / Pick-Up active state
+  const btnDelivery = document.getElementById('btn-delivery');
+  const btnPickup   = document.getElementById('btn-pickup');
+
+  function setActive(active, inactive) {
+    active.classList.replace('inactive','active');
+    inactive.classList.replace('active','inactive');
+  }
+
+  btnDelivery.addEventListener('click', () => setActive(btnDelivery, btnPickup));
+  btnPickup.addEventListener('click',   () => setActive(btnPickup, btnDelivery));
+</script>
+
 </body>
 </html>
