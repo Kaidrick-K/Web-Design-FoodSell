@@ -1,257 +1,549 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>FEASTORY - Welcome</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FEASTORY — Login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --primary:       #1a4d6e;
-      --primary-hover: #2a6d9e;
-      --accent:        #f4a835;
-      --white:         #ffffff;
-      --font:          -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+      --navy:      #1a4d6e;
+      --navy-dk:   #0f3047;
+      --navy-lt:   #2a6d9e;
+      --gold:      #f4a835;
+      --gold-lt:   #ffc566;
+      --cream:     #fdf8f2;
+      --white:     #ffffff;
+      --text:      #1c2340;
+      --muted:     #7a849e;
+      --border:    #e2e8f3;
+      --danger:    #d63031;
+      --danger-bg: #fff5f5;
+      --radius-sm: 10px;
+      --radius:    16px;
+      --radius-lg: 24px;
+      --shadow:    0 8px 32px rgba(26,77,110,0.14);
+      --shadow-lg: 0 20px 60px rgba(26,77,110,0.22);
+      --font-head: 'Playfair Display', Georgia, serif;
+      --font-body: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
     }
 
-    body {
-      font-family: var(--font);
-      min-height: 100vh;
+    html, body {
+      height: 100%;
+      font-family: var(--font-body);
+      background: var(--navy-dk);
+    }
+
+    body { display: flex; flex-direction: column; min-height: 100vh; }
+
+    a { text-decoration: none; color: inherit; }
+
+    /* ================================================================
+       LAYOUT — stacked on mobile, side-by-side on desktop
+    ================================================================ */
+    .page-wrap {
       display: flex;
-      align-items: stretch;
-      background: #0a0f14;
+      flex-direction: column;
+      min-height: 100vh;
     }
 
-    /* =====================
-       MOBILE: full screen hero
-    ===================== */
-    .hero-side {
+    /* ================================================================
+       HERO PANEL
+    ================================================================ */
+    .hero-panel {
       position: relative;
       flex: 1;
+      min-height: 45vh;
+      overflow: hidden;
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
-      min-height: 100vh;
-      overflow: hidden;
     }
 
-    /* Background image area */
-    .hero-bg {
-      position: absolute;
-      inset: 0;
-      /* REPLACE: background-image: url('hero-bg.jpg'); */
-      background: linear-gradient(160deg, #2c1a0e 0%, #1a3a1a 50%, #0a1a2a 100%);
-      background-size: cover;
-      background-position: center;
-    }
-
-    /* Food photo grid overlay */
-    .food-grid {
+    /* Mosaic food image grid */
+    .mosaic {
       position: absolute;
       inset: 0;
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 3fr 2fr;
       grid-template-rows: 1fr 1fr;
-      gap: 4px;
-      opacity: 0.55;
+      gap: 3px;
     }
-    .food-cell {
+
+    .mosaic-cell {
       overflow: hidden;
     }
-    /* REPLACE each: add <img src="food.jpg" alt="..."> inside .food-cell */
-    .food-cell img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .food-cell:nth-child(1) { background: linear-gradient(135deg,#c97b3b,#8b4513); grid-row: span 2; }
-    .food-cell:nth-child(2) { background: linear-gradient(135deg,#d4a060,#7a3010); }
-    .food-cell:nth-child(3) { background: linear-gradient(135deg,#8fbc5c,#3a6010); }
+    .mosaic-cell img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 8s ease;
+    }
+    .mosaic-cell img:hover { transform: scale(1.05); }
 
-    /* Dark gradient from bottom */
-    .hero-overlay {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(
-        to bottom,
-        rgba(0,0,0,0.10) 0%,
-        rgba(0,0,0,0.30) 40%,
-        rgba(5,15,25,0.92) 75%,
-        rgba(5,15,25,1.00) 100%
-      );
+    /* REPLACE each gradient div with <img src="food.jpg" alt="Food"> */
+    .mosaic-cell:nth-child(1) {
+      grid-row: span 2;
+      background: linear-gradient(145deg, #b06020 0%, #7a3e10 40%, #3a1a08 100%);
+    }
+    .mosaic-cell:nth-child(2) {
+      background: linear-gradient(145deg, #6aaa40 0%, #3a7a20 100%);
+    }
+    .mosaic-cell:nth-child(3) {
+      background: linear-gradient(145deg, #c87a30 0%, #8b4513 100%);
     }
 
-    /* Content on top of overlay */
-    .hero-content {
+    /* Deep gradient overlay for readability */
+    .mosaic-overlay {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(to right,  rgba(10,20,35,0.15) 0%, rgba(10,20,35,0.05) 100%),
+        linear-gradient(to bottom, rgba(10,20,35,0.0) 0%, rgba(8,18,32,0.97) 88%);
+      z-index: 1;
+    }
+
+    /* Hero text */
+    .hero-body {
       position: relative;
       z-index: 2;
       padding: 40px 32px 52px;
     }
 
-    .logo-block {
+    .brand-lockup {
       display: flex;
       align-items: center;
-      gap: 12px;
-      margin-bottom: 28px;
+      gap: 14px;
+      margin-bottom: 30px;
     }
 
-    .logo-icon-wrap {
-      width: 52px; height: 52px;
-      background: var(--primary);
+    .brand-icon {
+      width: 52px;
+      height: 52px;
+      background: var(--navy);
       border-radius: 14px;
-      display: flex; align-items: center; justify-content: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       flex-shrink: 0;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.4);
     }
-    .logo-icon-wrap svg { width: 28px; height: 28px; }
+    .brand-icon svg { width: 28px; height: 28px; }
 
-    .logo-text-block { line-height: 1; }
-    .logo-name {
-      font-size: 26px; font-weight: 800;
-      color: var(--white); letter-spacing: 2px; text-transform: uppercase;
-    }
-    .logo-name span { color: var(--accent); }
-    .logo-tagline { font-size: 11px; color: rgba(255,255,255,0.55); margin-top: 2px; letter-spacing: 0.5px; }
-
-    .hero-heading {
-      font-size: clamp(24px, 5vw, 36px);
-      font-weight: 800;
+    .brand-texts { line-height: 1; }
+    .brand-name {
+      font-family: var(--font-head);
+      font-size: 28px;
+      font-weight: 900;
       color: var(--white);
-      line-height: 1.2;
-      margin-bottom: 12px;
+      letter-spacing: 1px;
     }
-    .hero-heading em { font-style: normal; color: var(--accent); }
+    .brand-name em { font-style: normal; color: var(--gold); }
+    .brand-tagline {
+      font-size: 11px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.45);
+      letter-spacing: 0.6px;
+      margin-top: 4px;
+      text-transform: uppercase;
+    }
 
-    .hero-sub {
+    .hero-headline {
+      font-family: var(--font-head);
+      font-size: clamp(26px, 5vw, 42px);
+      font-weight: 700;
+      color: var(--white);
+      line-height: 1.18;
+      margin-bottom: 14px;
+    }
+    .hero-headline .hl { color: var(--gold); }
+
+    .hero-desc {
       font-size: 14px;
-      color: rgba(255,255,255,0.60);
-      line-height: 1.6;
-      margin-bottom: 36px;
-      max-width: 380px;
+      font-weight: 400;
+      color: rgba(255,255,255,0.55);
+      line-height: 1.7;
+      max-width: 360px;
+    }
+
+    /* Stat pills row */
+    .hero-stats {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 24px;
+    }
+    .stat-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,0.09);
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 30px;
+      padding: 6px 14px;
+      backdrop-filter: blur(4px);
+    }
+    .stat-pill svg  { width: 14px; height: 14px; fill: var(--gold); flex-shrink: 0; }
+    .stat-pill span { font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.8); }
+
+    /* ================================================================
+       FORM PANEL
+    ================================================================ */
+    .form-panel {
+      background: var(--cream);
+      padding: 48px 32px 56px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .form-panel-title {
+      font-family: var(--font-head);
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .form-panel-sub {
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--muted);
+      margin-bottom: 28px;
+      line-height: 1.5;
+    }
+
+    /* Demo hint */
+    .demo-hint {
+      background: #eef5ff;
+      border: 1.5px solid #c5d8f8;
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      margin-bottom: 22px;
+    }
+    .demo-hint-head {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 10px;
+    }
+    .demo-hint-head svg { width: 14px; height: 14px; fill: var(--navy); }
+    .demo-row {
+      display: flex;
+      gap: 0;
+      background: #fff;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+    .demo-item {
+      flex: 1;
+      padding: 9px 14px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .demo-item:first-child { border-right: 1px solid var(--border); }
+    .demo-item strong { display: block; font-size: 13px; font-weight: 700; color: var(--navy); margin-top: 1px; }
+
+    /* Error */
+    .field-error {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      background: var(--danger-bg);
+      border: 1.5px solid #f8c6c6;
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      font-size: 13px;
+      color: var(--danger);
+      margin-bottom: 16px;
+    }
+    .field-error.show { display: flex; }
+    .field-error svg { width: 16px; height: 16px; fill: var(--danger); flex-shrink: 0; }
+
+    /* Fields */
+    .field-group { margin-bottom: 18px; }
+
+    .field-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .field-input-wrap { position: relative; }
+    .field-input-wrap .fi-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 17px;
+      height: 17px;
+      fill: var(--muted);
+      pointer-events: none;
+    }
+
+    .field-input {
+      width: 100%;
+      padding: 13px 16px 13px 44px;
+      border-radius: var(--radius-sm);
+      border: 2px solid var(--border);
+      background: var(--white);
+      font-size: 14px;
+      font-family: var(--font-body);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .field-input::placeholder { color: var(--muted); }
+    .field-input:focus {
+      border-color: var(--navy);
+      box-shadow: 0 0 0 3px rgba(26,77,110,0.10);
     }
 
     /* Buttons */
-    .btn-group {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      max-width: 420px;
-    }
-
-    .btn {
-      display: block;
+    .btn-masuk {
       width: 100%;
-      padding: 16px 24px;
-      border-radius: 12px;
+      padding: 15px 20px;
+      border-radius: var(--radius-sm);
+      border: none;
+      background: var(--navy);
+      color: var(--white);
+      font-family: var(--font-body);
       font-size: 15px;
       font-weight: 700;
-      text-align: center;
-      text-decoration: none;
       cursor: pointer;
-      border: none;
-      font-family: var(--font);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 6px 20px rgba(26,77,110,0.35);
       transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+      margin-bottom: 14px;
     }
-    .btn:active { transform: scale(0.98); }
-
-    .btn-primary {
-      background: var(--primary);
-      color: var(--white);
-      box-shadow: 0 6px 24px rgba(26,77,110,0.60);
+    .btn-masuk svg { width: 18px; height: 18px; fill: var(--white); }
+    .btn-masuk:hover {
+      background: var(--navy-lt);
+      box-shadow: 0 8px 28px rgba(26,77,110,0.45);
     }
-    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-masuk:active { transform: scale(0.985); }
 
-    .btn-outline {
-      background: rgba(255,255,255,0.10);
-      color: var(--white);
-      border: 2px solid rgba(255,255,255,0.50);
+    .or-divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 6px 0 14px;
     }
-    .btn-outline:hover { background: rgba(255,255,255,0.18); }
+    .or-divider::before, .or-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+    .or-divider span {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--muted);
+      white-space: nowrap;
+    }
 
-    /* =====================
-       TABLET / DESKTOP: split layout
-    ===================== */
+    .btn-tamu {
+      width: 100%;
+      padding: 14px 20px;
+      border-radius: var(--radius-sm);
+      border: 2px solid var(--border);
+      background: var(--white);
+      color: var(--muted);
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: border-color 0.2s, color 0.2s, background 0.2s;
+    }
+    .btn-tamu svg { width: 18px; height: 18px; fill: var(--muted); transition: fill 0.2s; }
+    .btn-tamu:hover {
+      border-color: var(--navy);
+      color: var(--navy);
+      background: #f0f6ff;
+    }
+    .btn-tamu:hover svg { fill: var(--navy); }
+
+    /* ================================================================
+       RESPONSIVE
+    ================================================================ */
     @media (min-width: 768px) {
-      body { flex-direction: row; }
-
-      /* Left: hero image — takes up ~55% */
-      .hero-side {
-        flex: 0 0 55%;
-        min-height: unset;
-      }
-
-      .food-grid { opacity: 0.65; }
-
-      .hero-content {
-        padding: 60px 52px 60px;
-      }
-
-      .hero-heading { font-size: clamp(28px, 3vw, 44px); }
-      .hero-sub     { font-size: 15px; }
-
-      .btn-group {
-        flex-direction: row;
-        max-width: none;
-      }
-      .btn { width: auto; flex: 1; }
+      .page-wrap { flex-direction: row; }
+      .hero-panel { flex: 1; min-height: 100vh; justify-content: flex-end; }
+      .hero-body { padding: 64px 56px 64px; }
+      .form-panel { flex: 0 0 440px; min-height: 100vh; padding: 64px 48px; }
     }
 
-    @media (min-width: 1200px) {
-      .hero-side { flex: 0 0 60%; }
-      .hero-content { padding: 80px 72px; }
+    @media (min-width: 1100px) {
+      .hero-body { padding: 80px 72px; }
+      .form-panel { flex: 0 0 480px; padding: 80px 56px; }
     }
   </style>
 </head>
 <body>
+<div class="page-wrap">
 
-  <!-- Hero / branding side -->
-  <div class="hero-side">
-    <div class="hero-bg"></div>
-
-    <!-- Food photo grid -->
-    <div class="food-grid">
-      <div class="food-cell">
-        <!-- REPLACE: <img src="food1.jpg" alt="Food"> -->
-      </div>
-      <div class="food-cell">
-        <!-- REPLACE: <img src="food2.jpg" alt="Food"> -->
-      </div>
-      <div class="food-cell">
-        <!-- REPLACE: <img src="food3.jpg" alt="Food"> -->
-      </div>
+  <!-- ====== HERO PANEL ====== -->
+  <div class="hero-panel">
+    <div class="mosaic">
+      <div class="mosaic-cell"><!-- REPLACE: <img src="food1.jpg" alt="Nasi Goreng"> --></div>
+      <div class="mosaic-cell"><!-- REPLACE: <img src="food2.jpg" alt="Soto"> --></div>
+      <div class="mosaic-cell"><!-- REPLACE: <img src="food3.jpg" alt="Ayam Bakar"> --></div>
     </div>
+    <div class="mosaic-overlay"></div>
 
-    <div class="hero-overlay"></div>
-
-    <div class="hero-content">
-
-      <!-- Logo -->
-      <div class="logo-block">
-        <div class="logo-icon-wrap">
+    <div class="hero-body">
+      <div class="brand-lockup">
+        <div class="brand-icon">
           <svg viewBox="0 0 28 28" fill="none">
             <path d="M9 4v6a3 3 0 0 0 2 2.83V24h2V12.83A3 3 0 0 0 15 10V4h-1.5v5h-1V4H11v5h-1V4H9z" fill="#f4a835"/>
             <path d="M18 4c-1.1 0-2 1.5-2 4v5h1.5V24H19V4h-1z" fill="#f4a835"/>
           </svg>
         </div>
-        <div class="logo-text-block">
-          <div class="logo-name">F<span>east</span>ory</div>
-          <div class="logo-tagline">Food Delivery &amp; Pick-Up</div>
+        <div class="brand-texts">
+          <div class="brand-name">F<em>east</em>ory</div>
+          <div class="brand-tagline">Food Delivery &amp; Pick-Up</div>
         </div>
       </div>
 
-      <!-- Heading -->
-      <h1 class="hero-heading">
-        Selamat Datang<br/>di <em>FEASTORY!</em>
+      <h1 class="hero-headline">
+        Selamat Datang<br />di <span class="hl">FEASTORY!</span>
       </h1>
-      <p class="hero-sub">
-        Tempat di Mana Hidangan dan Kisahnya Bertemu.
-        Pesan makanan favoritmu dengan mudah, cepat, dan lezat.
+      <p class="hero-desc">
+        Temukan restoran terbaik di sekitarmu.<br />
+        Pesan makanan lezat dengan mudah dan cepat.
       </p>
 
-      <!-- CTA Buttons -->
-      <div class="btn-group">
-        <a href="index.html" class="btn btn-primary">Masuk</a>
-        <a href="#"          class="btn btn-outline">Buat Akun</a>
+      <div class="hero-stats">
+        <div class="stat-pill">
+          <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>
+          <span>4 Restoran Tersedia</span>
+        </div>
+        <div class="stat-pill">
+          <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+          <span>Rating 4.8 / 5</span>
+        </div>
+        <div class="stat-pill">
+          <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+          <span>30–45 Menit Pengiriman</span>
+        </div>
       </div>
-
     </div>
   </div>
 
+  <!-- ====== FORM PANEL ====== -->
+  <div class="form-panel">
+    <div class="form-panel-title">Masuk ke Akun</div>
+    <div class="form-panel-sub">Masuk untuk memesan makanan favoritmu, atau<br />lanjutkan sebagai tamu untuk menjelajah.</div>
+
+    <!-- Demo hint box -->
+    <div class="demo-hint">
+      <div class="demo-hint-head">
+        <svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+        Akun Demo Tersedia
+      </div>
+      <div class="demo-row">
+        <div class="demo-item">Username<strong>jennifer</strong></div>
+        <div class="demo-item">Password<strong>feastory123</strong></div>
+      </div>
+    </div>
+
+    <!-- Error -->
+    <div class="field-error" id="field-error">
+      <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+      Username atau password salah. Coba lagi.
+    </div>
+
+    <!-- Username -->
+    <div class="field-group">
+      <label class="field-label" for="username">Username</label>
+      <div class="field-input-wrap">
+        <svg class="fi-icon" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+        <input class="field-input" type="text" id="username" placeholder="Masukkan username..." autocomplete="username" />
+      </div>
+    </div>
+
+    <!-- Password -->
+    <div class="field-group">
+      <label class="field-label" for="password">Password</label>
+      <div class="field-input-wrap">
+        <svg class="fi-icon" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+        <input class="field-input" type="password" id="password" placeholder="Masukkan password..." autocomplete="current-password" />
+      </div>
+    </div>
+
+    <!-- Login btn -->
+    <button class="btn-masuk" id="btn-login">
+      <svg viewBox="0 0 24 24"><path d="M11 7L9.6 8.4l2.6 2.6H2v2h10.2l-2.6 2.6L11 17l5-5-5-5zm9 12h-8v2h8c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-8v2h8v14z"/></svg>
+      Masuk
+    </button>
+
+    <div class="or-divider"><span>atau lanjutkan sebagai</span></div>
+
+    <!-- Guest btn -->
+    <button class="btn-tamu" id="btn-guest">
+      <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+      Masuk sebagai Tamu
+    </button>
+  </div>
+
+</div>
+
+<script>
+  // If already logged in, go straight to home
+  try {
+    if (localStorage.getItem('feastory_user')) {
+      window.location.href = 'index.html';
+    }
+  } catch(e) {}
+
+  var ACCOUNTS = { 'jennifer': 'feastory123' };
+
+  function doLogin() {
+    var u = (document.getElementById('username').value || '').trim().toLowerCase();
+    var p = (document.getElementById('password').value || '');
+    var err = document.getElementById('field-error');
+    if (ACCOUNTS[u] && ACCOUNTS[u] === p) {
+      try {
+        localStorage.setItem('feastory_user', 'Jennifer');
+        localStorage.setItem('feastory_role', 'member');
+      } catch(e) {}
+      window.location.href = 'index.html';
+    } else {
+      err.className = 'field-error show';
+    }
+  }
+
+  document.getElementById('btn-login').addEventListener('click', doLogin);
+
+  document.getElementById('password').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') { doLogin(); }
+  });
+
+  document.getElementById('btn-guest').addEventListener('click', function() {
+    try {
+      localStorage.setItem('feastory_user', 'Tamu');
+      localStorage.setItem('feastory_role', 'guest');
+    } catch(e) {}
+    window.location.href = 'index.html';
+  });
+</script>
 </body>
 </html>

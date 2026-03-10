@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FEASTORY — Semua Restoran</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy:#1a4d6e; --navy-dk:#0f3047; --navy-lt:#2a6d9e;
+      --gold:#f4a835; --bg:#f2f5f9; --card:#fff;
+      --text:#1c2340; --muted:#7a849e; --border:#e2e8f3;
+      --green:#27ae60; --red:#e74c3c;
+      --radius:16px; --sidebar-w:256px; --topbar-h:68px;
+      --font-head:'Playfair Display',Georgia,serif;
+      --font-body:'DM Sans',-apple-system,BlinkMacSystemFont,sans-serif;
+      --shadow-sm:0 2px 10px rgba(26,77,110,0.08);
+      --shadow:0 4px 20px rgba(26,77,110,0.12);
+      --shadow-lg:0 12px 40px rgba(26,77,110,0.18);
+    }
+    html,body { font-family:var(--font-body); background:var(--bg); min-height:100vh; color:var(--text); }
+    a { text-decoration:none; color:inherit; }
+    button { font-family:var(--font-body); }
+
+    /* SIDEBAR */
+    .sidebar { display:none; position:fixed; top:0; left:0; bottom:0; width:var(--sidebar-w); background:var(--navy-dk); z-index:300; flex-direction:column; overflow-y:auto; }
+    .sb-brand { padding:28px 24px 22px; border-bottom:1px solid rgba(255,255,255,.08); }
+    .sb-brand-row { display:flex; align-items:center; gap:12px; }
+    .sb-brand-icon { width:44px; height:44px; background:var(--navy); border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .sb-brand-icon svg { width:24px; height:24px; }
+    .sb-brand-name { font-family:var(--font-head); font-size:22px; font-weight:700; color:#fff; }
+    .sb-brand-name em { font-style:normal; color:var(--gold); }
+    .sb-user { padding:18px 24px; border-bottom:1px solid rgba(255,255,255,.08); }
+    .sb-avatar-row { display:flex; align-items:center; gap:12px; }
+    .sb-avatar { width:40px; height:40px; background:var(--gold); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:700; color:var(--navy-dk); flex-shrink:0; }
+    .sb-user-name { font-size:14px; font-weight:700; color:#fff; }
+    .sb-user-role { font-size:11px; color:rgba(255,255,255,.45); margin-top:2px; }
+    .sb-nav { padding:16px 0 8px; flex:1; }
+    .sb-section-label { font-size:10px; font-weight:700; color:rgba(255,255,255,.30); letter-spacing:1.8px; text-transform:uppercase; padding:12px 24px 6px; }
+    .sb-nav-item { display:flex; align-items:center; gap:12px; padding:11px 24px; color:rgba(255,255,255,.55); font-size:14px; font-weight:500; border-left:3px solid transparent; transition:all .2s; cursor:pointer; margin-bottom:2px; }
+    .sb-nav-item svg { width:20px; height:20px; fill:rgba(255,255,255,.45); flex-shrink:0; }
+    .sb-nav-item:hover { color:#fff; background:rgba(255,255,255,.06); }
+    .sb-nav-item:hover svg { fill:rgba(255,255,255,.8); }
+    .sb-nav-item.active { color:#fff; background:rgba(42,109,158,.35); border-left-color:var(--gold); }
+    .sb-nav-item.active svg { fill:var(--gold); }
+    .sb-nav-item.danger { color:rgba(255,110,110,.7); }
+    .sb-nav-item.danger svg { fill:rgba(255,110,110,.6); }
+    .sb-nav-item.danger:hover { color:#ff7070; background:rgba(255,60,60,.08); }
+
+    /* MAIN */
+    .main-wrap { display:flex; flex-direction:column; min-height:100vh; }
+    .topbar { height:var(--topbar-h); background:var(--navy); display:flex; align-items:center; justify-content:space-between; padding:0 20px; position:sticky; top:0; z-index:200; box-shadow:0 2px 16px rgba(0,0,0,.18); }
+    .topbar-back { display:flex; align-items:center; gap:8px; color:#fff; font-size:15px; font-weight:600; cursor:pointer; background:none; border:none; }
+    .topbar-back svg { width:22px; height:22px; fill:#fff; }
+    .topbar-title { font-family:var(--font-head); font-size:20px; font-weight:700; color:#fff; }
+    .topbar-btn { width:40px; height:40px; border-radius:50%; background:rgba(255,255,255,.12); border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+    .topbar-btn svg { width:20px; height:20px; fill:#fff; }
+    .topbar-btn:hover { background:rgba(255,255,255,.22); }
+
+    /* PAGE */
+    .page-content { flex:1; padding:24px 16px 90px; max-width:1280px; width:100%; margin:0 auto; }
+
+    /* Search + filters */
+    .search-wrap { position:relative; margin-bottom:18px; }
+    .search-icon { position:absolute; left:16px; top:50%; transform:translateY(-50%); width:18px; height:18px; fill:var(--muted); pointer-events:none; }
+    .search-input { width:100%; padding:14px 18px 14px 48px; border-radius:30px; border:2px solid var(--border); background:var(--card); font-size:14px; font-family:var(--font-body); color:var(--text); outline:none; box-shadow:var(--shadow-sm); transition:border-color .2s; }
+    .search-input::placeholder { color:var(--muted); }
+    .search-input:focus { border-color:var(--navy); }
+
+    .filter-row { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:22px; }
+    .filter-chip { padding:8px 18px; border-radius:20px; border:1.5px solid var(--border); background:var(--card); color:var(--muted); font-size:13px; font-weight:600; cursor:pointer; transition:all .2s; font-family:var(--font-body); }
+    .filter-chip.active { background:var(--navy); color:#fff; border-color:var(--navy); box-shadow:0 4px 12px rgba(26,77,110,.25); }
+    .filter-chip:hover:not(.active) { border-color:var(--navy); color:var(--navy); }
+
+    .results-label { font-size:13px; color:var(--muted); margin-bottom:18px; }
+    .results-label strong { color:var(--text); }
+
+    /* Restaurant cards — bigger + more info for this list page */
+    .resto-list { display:grid; grid-template-columns:repeat(auto-fill, minmax(300px, 1fr)); gap:22px; }
+
+    .resto-list-card { background:var(--card); border-radius:var(--radius); overflow:hidden; box-shadow:var(--shadow-sm); border:1px solid rgba(226,232,243,.7); display:flex; flex-direction:column; transition:transform .25s,box-shadow .25s; }
+    .resto-list-card:hover { transform:translateY(-5px); box-shadow:var(--shadow-lg); }
+
+    .rlc-thumb { width:100%; height:180px; position:relative; overflow:hidden; flex-shrink:0; }
+    .rlc-thumb img { width:100%; height:100%; object-fit:cover; display:block; transition:transform .4s; }
+    .resto-list-card:hover .rlc-thumb img { transform:scale(1.05); }
+    .rlc-thumb-grad { width:100%; height:100%; }
+    .rlc-badge { position:absolute; top:12px; right:12px; background:var(--gold); color:var(--navy-dk); font-size:10px; font-weight:700; padding:4px 12px; border-radius:20px; }
+    .rlc-status-open  { position:absolute; top:12px; left:12px; background:rgba(39,174,96,.90); color:#fff; font-size:10px; font-weight:700; padding:4px 12px; border-radius:20px; }
+    .rlc-status-close { position:absolute; top:12px; left:12px; background:rgba(200,50,50,.88); color:#fff; font-size:10px; font-weight:700; padding:4px 12px; border-radius:20px; }
+
+    .rlc-body { padding:18px 20px 20px; flex:1; display:flex; flex-direction:column; }
+
+    .rlc-top { display:flex; align-items:flex-start; gap:14px; margin-bottom:12px; }
+    .rlc-logo { width:52px; height:52px; border-radius:12px; flex-shrink:0; overflow:hidden; }
+    .rlc-logo img { width:100%; height:100%; object-fit:cover; }
+    .rlc-logo-grad { width:100%; height:100%; }
+
+    .rlc-info { min-width:0; }
+    .rlc-name { font-size:16px; font-weight:700; color:var(--text); margin-bottom:3px; }
+    .rlc-cat  { font-size:12px; color:var(--muted); }
+
+    .rlc-stats { display:flex; flex-wrap:wrap; gap:16px; margin-bottom:12px; }
+    .rlc-stat  { display:flex; align-items:center; gap:5px; font-size:12px; color:var(--muted); }
+    .rlc-stat svg { width:13px; height:13px; fill:var(--muted); }
+    .rlc-stat .star-ic { color:var(--gold); }
+
+    .rlc-desc { font-size:13px; color:var(--muted); line-height:1.6; margin-bottom:16px; flex:1; }
+
+    .rlc-btn { display:block; text-align:center; padding:12px; border-radius:10px; background:var(--navy); color:#fff; font-size:14px; font-weight:700; font-family:var(--font-body); border:none; cursor:pointer; transition:background .2s; }
+    .rlc-btn:hover { background:var(--navy-lt); }
+
+    /* bottom nav */
+    .bottom-nav { display:flex; position:fixed; bottom:0; left:0; right:0; height:64px; background:var(--card); border-top:1px solid var(--border); justify-content:space-around; align-items:center; z-index:250; box-shadow:0 -4px 20px rgba(0,0,0,.08); }
+    .bn-item { display:flex; flex-direction:column; align-items:center; gap:3px; padding:6px 14px; cursor:pointer; color:var(--muted); font-size:10px; font-weight:600; }
+    .bn-item svg { width:22px; height:22px; fill:var(--muted); }
+    .bn-item.active { color:var(--navy); }
+    .bn-item.active svg { fill:var(--navy); }
+
+    @media(min-width:640px) { .page-content { padding:28px 28px 100px; } .topbar { padding:0 28px; } }
+    @media(min-width:1024px) {
+      .sidebar { display:flex; }
+      .main-wrap { margin-left:var(--sidebar-w); }
+      .topbar { padding:0 40px; height:72px; }
+      .bottom-nav { display:none; }
+      .page-content { padding:36px 40px 40px; }
+      .resto-list { grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); }
+      .rlc-thumb { height:200px; }
+    }
+    @media(min-width:1400px) { .resto-list { grid-template-columns:repeat(3,1fr); } }
+  </style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sb-brand">
+    <div class="sb-brand-row">
+      <div class="sb-brand-icon"><svg viewBox="0 0 28 28" fill="none"><path d="M9 4v6a3 3 0 0 0 2 2.83V24h2V12.83A3 3 0 0 0 15 10V4h-1.5v5h-1V4H11v5h-1V4H9z" fill="#f4a835"/><path d="M18 4c-1.1 0-2 1.5-2 4v5h1.5V24H19V4h-1z" fill="#f4a835"/></svg></div>
+      <div class="sb-brand-name">F<em>east</em>ory</div>
+    </div>
+  </div>
+  <div class="sb-user">
+    <div class="sb-avatar-row">
+      <div class="sb-avatar" id="sb-avatar">?</div>
+      <div><div class="sb-user-name" id="sb-uname">—</div><div class="sb-user-role" id="sb-urole">—</div></div>
+    </div>
+  </div>
+  <div class="sb-nav">
+    <div class="sb-section-label">Menu Utama</div>
+    <a href="index.html" class="sb-nav-item"><svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>Beranda</a>
+    <a href="#" class="sb-nav-item"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>Pesanan Saya</a>
+    <a href="restaurants.html" class="sb-nav-item active"><svg viewBox="0 0 24 24"><path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/></svg>Semua Restoran</a>
+    <a href="#" class="sb-nav-item"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>Favorit</a>
+    <div class="sb-section-label">Akun</div>
+    <a href="#" class="sb-nav-item"><svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>Profil Saya</a>
+    <a href="#" class="sb-nav-item danger" id="sb-logout"><svg viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>Keluar</a>
+  </div>
+</aside>
+
+<div class="main-wrap">
+  <header class="topbar">
+    <a href="index.html" class="topbar-back"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>Kembali</a>
+    <span class="topbar-title">Semua Restoran</span>
+    <button class="topbar-btn" aria-label="Filter"><svg viewBox="0 0 24 24"><path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/></svg></button>
+  </header>
+
+  <main class="page-content">
+
+    <div class="search-wrap">
+      <svg class="search-icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+      <input class="search-input" type="text" id="search-inp" placeholder="Cari nama restoran atau kategori..." />
+    </div>
+
+    <div class="filter-row">
+      <button class="filter-chip active" data-f="semua">Semua</button>
+      <button class="filter-chip" data-f="buka">Buka Sekarang</button>
+      <button class="filter-chip" data-f="dekat">Terdekat</button>
+      <button class="filter-chip" data-f="rating">Rating Tertinggi</button>
+      <button class="filter-chip" data-f="promo">Ada Promo</button>
+    </div>
+
+    <p class="results-label">Menampilkan <strong id="count-label">4</strong> restoran di sekitar kamu</p>
+
+    <div class="resto-list" id="resto-list">
+
+      <!-- Card 1: Warung Makan Dahsyat -->
+      <div class="resto-list-card" data-name="warung makan dahsyat nusantara indonesia" data-open="1">
+        <div class="rlc-thumb">
+          <!-- REPLACE: <img src="resto1-hero.jpg" alt="Warung Makan Dahsyat"> -->
+          <div class="rlc-thumb-grad" style="background:linear-gradient(145deg,#b06020,#7a3e10,#3a1a08)"></div>
+          <span class="rlc-badge">&#9733; Populer</span>
+          <span class="rlc-status-open">&#9679; Buka</span>
+        </div>
+        <div class="rlc-body">
+          <div class="rlc-top">
+            <div class="rlc-logo">
+              <!-- REPLACE: <img src="logo1.png" alt="Logo Warung Makan Dahsyat"> -->
+              <div class="rlc-logo-grad" style="background:linear-gradient(135deg,#b06020,#7a3e10)"></div>
+            </div>
+            <div class="rlc-info">
+              <div class="rlc-name">Warung Makan Dahsyat</div>
+              <div class="rlc-cat">Masakan Indonesia &bull; Nusantara &bull; Rumahan</div>
+            </div>
+          </div>
+          <div class="rlc-stats">
+            <div class="rlc-stat"><span class="star-ic">&#9733;</span> 4.8 &nbsp;(120 ulasan)</div>
+            <div class="rlc-stat"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg> 0.5 km</div>
+            <div class="rlc-stat"><svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg> 5am – 3pm</div>
+            <div class="rlc-stat"><svg viewBox="0 0 24 24"><path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4z"/></svg> Delivery &amp; Pick-Up</div>
+          </div>
+          <p class="rlc-desc">Restoran keluarga dengan cita rasa autentik masakan nusantara. Menggunakan bahan segar pilihan setiap harinya. Sudah melayani pelanggan setia sejak tahun 1998 dengan menu spesial yang selalu terjaga kualitasnya.</p>
+          <a href="restaurant-profile.html" class="rlc-btn">Lihat Menu &amp; Profil</a>
+        </div>
+      </div>
+
+      <!-- Card 2: Soto Babat KQ Petrus -->
+      <div class="resto-list-card" data-name="soto babat kq petrus solo jeroan sapi" data-open="1">
+        <div class="rlc-thumb">
+          <!-- REPLACE: <img src="resto2-hero.jpg" alt="Soto Babat KQ Petrus"> -->
+          <div class="rlc-thumb-grad" style="background:linear-gradient(145deg,#c87a30,#8b4513,#5a2a00)"></div>
+          <span class="rlc-badge">&#10024; Baru</span>
+          <span class="rlc-status-open">&#9679; Buka</span>
+        </div>
+        <div class="rlc-body">
+          <div class="rlc-top">
+            <div class="rlc-logo">
+              <!-- REPLACE: <img src="logo2.png" alt="Logo Soto Babat KQ Petrus"> -->
+              <div class="rlc-logo-grad" style="background:linear-gradient(135deg,#c87a30,#8b4513)"></div>
+            </div>
+            <div class="rlc-info">
+              <div class="rlc-name">Soto Babat KQ Petrus</div>
+              <div class="rlc-cat">Soto &bull; Jeroan Sapi &bull; Masakan Solo</div>
+            </div>
+          </div>
+          <div class="rlc-stats">
+            <div class="rlc-stat"><span class="star-ic">&#9733;</span> 4.6 &nbsp;(85 ulasan)</div>
+            <div class="rlc-stat"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg> 1.2 km</div>
+            <div class="rlc-stat"><svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg> 6am – 2pm</div>
+            <div class="rlc-stat"><svg viewBox="0 0 24 24"><path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4z"/></svg> Delivery &amp; Pick-Up</div>
+          </div>
+          <p class="rlc-desc">Soto babat legendaris dengan kuah bening gurih khas Solo. Babat sapi dipilih dan dibersihkan secara higienis setiap hari. Cocok untuk sarapan pagi yang menghangatkan tubuh dan memuaskan selera.</p>
+          <a href="restaurant-profile-2.html" class="rlc-btn">Lihat Menu &amp; Profil</a>
+        </div>
+      </div>
+
+      <!-- Card 3: Warung Padang Barokah -->
+      <div class="resto-list-card" data-name="warung padang barokah minang rendang gulai" data-open="1">
+        <div class="rlc-thumb">
+          <!-- REPLACE: <img src="resto3-hero.jpg" alt="Warung Padang Barokah"> -->
+          <div class="rlc-thumb-grad" style="background:linear-gradient(145deg,#5a9030,#3a6a18,#1a3a08)"></div>
+          <span class="rlc-status-open">&#9679; Buka</span>
+        </div>
+        <div class="rlc-body">
+          <div class="rlc-top">
+            <div class="rlc-logo">
+              <!-- REPLACE: <img src="logo3.png" alt="Logo Warung Padang Barokah"> -->
+              <div class="rlc-logo-grad" style="background:linear-gradient(135deg,#5a9030,#3a6a18)"></div>
+            </div>
+            <div class="rlc-info">
+              <div class="rlc-name">Warung Padang Barokah</div>
+              <div class="rlc-cat">Masakan Padang &bull; Minang &bull; Rendang</div>
+            </div>
+          </div>
+          <div class="rlc-stats">
+            <div class="rlc-stat"><span class="star-ic">&#9733;</span> 4.5 &nbsp;(200 ulasan)</div>
+            <div class="rlc-stat"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg> 2.0 km</div>
+            <div class="rlc-stat"><svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg> 7am – 9pm</div>
+            <div class="rlc-stat"><svg viewBox="0 0 24 24"><path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4z"/></svg> Delivery &amp; Pick-Up</div>
+          </div>
+          <p class="rlc-desc">Hidangan Padang otentik dengan rendang empuk, gulai kambing, dan sambal ijo terbaik. Semua bumbu dimasak dari bahan segar dan rempah pilihan setiap pagi. Rasakan cita rasa Minang yang sesungguhnya.</p>
+          <a href="restaurant-profile-3.html" class="rlc-btn">Lihat Menu &amp; Profil</a>
+        </div>
+      </div>
+
+      <!-- Card 4: Depot Bu Tini -->
+      <div class="resto-list-card" data-name="depot bu tini jawa rumahan pecel lontong opor" data-open="0">
+        <div class="rlc-thumb">
+          <!-- REPLACE: <img src="resto4-hero.jpg" alt="Depot Bu Tini"> -->
+          <div class="rlc-thumb-grad" style="background:linear-gradient(145deg,#c86040,#8b3a18,#5a1a08)"></div>
+          <span class="rlc-badge">&#10084; Favorit</span>
+          <span class="rlc-status-close">&#9679; Tutup</span>
+        </div>
+        <div class="rlc-body">
+          <div class="rlc-top">
+            <div class="rlc-logo">
+              <!-- REPLACE: <img src="logo4.png" alt="Logo Depot Bu Tini"> -->
+              <div class="rlc-logo-grad" style="background:linear-gradient(135deg,#c86040,#8b3a18)"></div>
+            </div>
+            <div class="rlc-info">
+              <div class="rlc-name">Depot Bu Tini</div>
+              <div class="rlc-cat">Masakan Rumahan &bull; Jawa &bull; Pecel</div>
+            </div>
+          </div>
+          <div class="rlc-stats">
+            <div class="rlc-stat"><span class="star-ic">&#9733;</span> 4.7 &nbsp;(310 ulasan)</div>
+            <div class="rlc-stat"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg> 0.8 km</div>
+            <div class="rlc-stat"><svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg> 8am – 3pm</div>
+            <div class="rlc-stat"><svg viewBox="0 0 24 24"><path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4z"/></svg> Delivery &amp; Pick-Up</div>
+          </div>
+          <p class="rlc-desc">Masakan rumahan khas Jawa dengan menu harian yang selalu berganti-ganti. Terkenal dengan pecel sayur segar, lontong opor lebaran, dan aneka lauk pauk yang dimasak dengan penuh cinta setiap harinya.</p>
+          <a href="restaurant-profile-4.html" class="rlc-btn">Lihat Menu &amp; Profil</a>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<nav class="bottom-nav">
+  <a href="index.html" class="bn-item"><svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>Beranda</a>
+  <a href="restaurants.html" class="bn-item active"><svg viewBox="0 0 24 24"><path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/></svg>Restoran</a>
+  <a href="#" class="bn-item"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>Favorit</a>
+  <a href="#" class="bn-item" id="bn-logout"><svg viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>Keluar</a>
+</nav>
+
+<script>
+  var user='',role='';
+  try { user=localStorage.getItem('feastory_user')||''; role=localStorage.getItem('feastory_role')||''; } catch(e){}
+  if(!user){window.location.href='login.html';}
+  var display=user||'Tamu';
+  document.getElementById('sb-avatar').textContent=display.charAt(0).toUpperCase();
+  document.getElementById('sb-uname').textContent=display;
+  document.getElementById('sb-urole').textContent=role==='guest'?'Pengguna Tamu':'Member';
+  function doLogout(){try{localStorage.removeItem('feastory_user');localStorage.removeItem('feastory_role');}catch(e){}window.location.href='login.html';}
+  document.getElementById('sb-logout').addEventListener('click',doLogout);
+  document.getElementById('bn-logout').addEventListener('click',doLogout);
+
+  // Search
+  document.getElementById('search-inp').addEventListener('input',function(){
+    var q=this.value.toLowerCase();
+    var cards=document.querySelectorAll('.resto-list-card');
+    var visible=0;
+    cards.forEach(function(c){
+      var show=c.dataset.name.includes(q);
+      c.style.display=show?'':'none';
+      if(show) visible++;
+    });
+    document.getElementById('count-label').textContent=visible;
+  });
+
+  // Filter chips
+  document.querySelectorAll('.filter-chip').forEach(function(chip){
+    chip.addEventListener('click',function(){
+      document.querySelectorAll('.filter-chip').forEach(function(c){c.className='filter-chip';});
+      chip.className='filter-chip active';
+    });
+  });
+</script>
+</body>
+</html>
