@@ -460,8 +460,8 @@
         Akun Demo Tersedia
       </div>
       <div class="demo-row">
-        <div class="demo-item">Username<strong>jennifer</strong></div>
-        <div class="demo-item">Password<strong>feastory123</strong></div>
+        <div class="demo-item">Username<strong>Bahlil</strong></div>
+        <div class="demo-item">Password<strong>Ethanol123</strong></div>
       </div>
     </div>
 
@@ -514,7 +514,7 @@
     }
   } catch(e) {}
 
-  var ACCOUNTS = { 'jennifer': 'feastory123' };
+  var ACCOUNTS = { 'Bahlil': 'Ethanol123' };
 
   function doLogin() {
     var u = (document.getElementById('username').value || '').trim().toLowerCase();
@@ -522,7 +522,7 @@
     var err = document.getElementById('field-error');
     if (ACCOUNTS[u] && ACCOUNTS[u] === p) {
       try {
-        localStorage.setItem('feastory_user', 'Jennifer');
+        localStorage.setItem('feastory_user', 'Bahlil');
         localStorage.setItem('feastory_role', 'member');
       } catch(e) {}
       window.location.href = 'index.html';
